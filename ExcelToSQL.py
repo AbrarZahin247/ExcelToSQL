@@ -8,8 +8,6 @@ class ExcelToSQL:
         self.updatingCol=[]
         self.noOfRows=0
         self.exportSQLTxtFile="sql.txt"
-        if(len(self.filename.strip())== 0):
-            self.filename="data.xlsx"
         self.EmptyTheTextFile()
         self.TakeUserRequirements()
         self.CheckWhichOperationToRun()
@@ -54,6 +52,8 @@ class ExcelToSQL:
         """
         print(msg)
         self.filename=input("        Enter the excel filename   ")
+        if(len(self.filename.strip())== 0):
+            self.filename="data.xlsx"
 
         msg="""
 

@@ -1,6 +1,0 @@
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (1,'Alib','HR',1800000000.0);
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (2,'Basir','Marketing',1700000000.0);
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (3,'Dalim','HR',1500000000.0);
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (4,'Emon','IT',1300000000.0);
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (5,'Fahim','PR',1900000000.0);
-INSERT INTO employee(id,name,employee_dept,contact)VALUES (6,'Galib','N/A','N/A');

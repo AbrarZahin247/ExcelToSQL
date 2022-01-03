@@ -8,15 +8,17 @@ class ExcelToSQL:
         self.updatingCol=[]
         self.noOfRows=0
         self.exportSQLTxtFile="sql.txt"
+        if (self.filename == ''):
+            self.filename="data.xlsx"
         self.EmptyTheTextFile()
         self.TakeUserRequirements()
         self.CheckWhichOperationToRun()
-        
+
     def AppendSQLToText(self,txtfilename,contentToWrite):
         file_object = open(txtfilename, 'a')
         file_object.write(contentToWrite)
         file_object.close()
-        
+
     def EmptyTheTextFile(self):
         file = open(self.txtFileName,"w")
         file.close()
@@ -26,8 +28,8 @@ class ExcelToSQL:
         msg="""
         ===========================================================
 
-        Welcome to Excel data extract to Sql 
-        Please select a action 
+        Welcome to Excel data extract to Sql
+        Please select a action
 
         1 Update into Database
         2 Insert data into Database
@@ -39,12 +41,12 @@ class ExcelToSQL:
         """
         print(msg)
         self.operation=input("        Enter your action   ").lower()
-        msg=""" 
+        msg="""
 
         ===========================================================
 
-        Now write the name of the Excel file in .xlsx format 
-        to read data from. 
+        Now write the name of the Excel file in .xlsx format
+        to read data from.
 
         example: data.xlsx
 
@@ -52,40 +54,40 @@ class ExcelToSQL:
         """
         print(msg)
         self.filename=input("        Enter the excel filename   ")
-                
+
         msg="""
-        
+
         =================================================================================
         Enter the reference table name
-        (note: the reference table name should be similar with the table in the database)        
+        (note: the reference table name should be similar with the table in the database)
         =================================================================================
-        
+
         """
-        print(msg)        
-        self.tableName=input("        Enter the reference table name  ")      
-        
-        
-        
-        
+        print(msg)
+        self.tableName=input("        Enter the reference table name  ")
+
+
+
+
 
     def CheckWhichOperationToRun(self):
         if(self.operation=="u"):
-            self.Update()            
+            self.Update()
         elif(self.operation=="i"):
             self.Insert()
 
 
     #------Run operation for Update action
     #------Takes three input from user table name, ref col name,updating col name
-    
+
     def UpdateOperation(self):
-        cols=[]        
+        cols=[]
         msg="""
-        
+
         ====================================================================================
         Enter the reference column name
         (note: the reference column name should be similar with the column with the database
-        Its possible to enter multiple column name separated with comma)        
+        Its possible to enter multiple column name separated with comma)
         ====================================================================================
 
         """
@@ -97,7 +99,7 @@ class ExcelToSQL:
 
         Enter the updating column name
         (note: the column that should be updated with data, must have the same name with the database)
-        
+
         """
         print(msg)
         x=input("        Enter the updating column name  ")
@@ -105,16 +107,16 @@ class ExcelToSQL:
         self.updatingCol=x
         cols.append(x)
         return cols
-        
-        
+
+
     def GetValidRefAndUpdatingColName(self,cols):
         try:
-            print('===========================================')            
+            print('===========================================')
             for y in cols[1]:
-                print(y+" exist in excel file.")        
+                print(y+" exist in excel file.")
             print(self.refCol+" exist in excel file.")
             print('===========================================')
-            
+
         except KeyError:
             print('No information on column'+y+'found')
             cols=self.UpdateOperation()
@@ -137,7 +139,7 @@ class ExcelToSQL:
         shape=df.shape
         self.noOfRows=shape[0]
         rowData=[]
-        rows=[]    
+        rows=[]
         colPos=[]
 
         for i in range(len(self.updatingCol)):
@@ -150,7 +152,7 @@ class ExcelToSQL:
             rows.append(rowData)
             rowData=[]
         #-----all rows data in 2d list--------column name list-------listof referenced column id
-        return rows,d,df[self.refCol].tolist()   
+        return rows,d,df[self.refCol].tolist()
 
 
     #---------Return a single line query.
@@ -159,30 +161,30 @@ class ExcelToSQL:
     def SingleLineUpdateQuery(self,tableName,valuesToUpdate,refColValue):
         qry="UPDATE "+tableName.upper()+" SET "+valuesToUpdate+" WHERE "+self.refCol+" = "+str(refColValue)+";"
         return qry
-    
+
     #---------Renders each single line querys for given data as input parameter
     #---------Takes value which to update array, reference column value array
 
     def GenerateSQLForUpdate(self):
-        try:
-            data=self.GetDataForUpdate()
-            rowsOfValuesToUpdate=self.GenerateValuesToUpdate(self.updatingCol,data[0])
-            for x in range(len(rowsOfValuesToUpdate)):
-                x=self.SingleLineUpdateQuery(self.tableName,rowsOfValuesToUpdate[x],data[2][x])
-                x=x+"\n"
-                self.AppendSQLToText(self.exportSQLTxtFile,x)
-            print("Added Sql query in "+self.txtFileName+" Successfully !")
-        except:
-            print("Failed to Generate SQL.")
-            
-        
+    #try:
+        data=self.GetDataForUpdate()
+        rowsOfValuesToUpdate=self.GenerateValuesToUpdate(self.updatingCol,data[0])
+        for x in range(len(rowsOfValuesToUpdate)):
+            x=self.SingleLineUpdateQuery(self.tableName,rowsOfValuesToUpdate[x],data[2][x])
+            x=x+"\n"
+            self.AppendSQLToText(self.exportSQLTxtFile,x)
+        print("Added Sql query in "+self.txtFileName+" Successfully !")
+    #except:
+        #print("Failed to Generate SQL.")
+
+
 
     #--------Returns array of values to update so that those might be concatanated with other SQL string
     #--------Takes list of columns names and data to insert
     def GenerateValuesToUpdate(self,columnNames,datas):
         sqlText=""
         rowOfValuesToUpdate=[]
-        for j in range(len(datas)):            
+        for j in range(len(datas)):
             for i in range(len(columnNames)):
                 if(isinstance(datas[j][i], str)):
                     firstPart=columnNames[i]+"='"+datas[j][i]+"'"
@@ -194,8 +196,8 @@ class ExcelToSQL:
             rowOfValuesToUpdate.append(sqlText)
             sqlText=""
         return rowOfValuesToUpdate
-       
-    #Insert Section Code   
+
+    #Insert Section Code
 
     # Get all the rows from excel
     # Here the first column would be all the columns name
@@ -217,7 +219,7 @@ class ExcelToSQL:
                 rowData.append(df.loc[x][y])
             rows.append(rowData)
             rowData=[];
-        return rows 
+        return rows
 
     #---------Return a single line query for Insert.
     #---------Takes middleQuery, endquery as parameter
@@ -225,13 +227,13 @@ class ExcelToSQL:
     def SingleLineInsertQuery(self,middleQuery,endQuery):
         qry="INSERT INTO "+self.tableName+"("+middleQuery+")"+"VALUES ("+endQuery+");"
         return qry
-    
+
     def MiddleQueryAndEndQueryGenerator(self,data):
         #generate middlequery
         middleQuery=""
         endQuery=""
         endQueries=[]
-        
+
         for x in data[0]:
             middleQuery+=x
             if(x!=data[0][len(data[0])-1]):
@@ -245,7 +247,7 @@ class ExcelToSQL:
             endQueries.append(endQuery[:-1])
             endQuery=""
         return middleQuery,endQueries
-    
+
     def Insert(self):
         try:
             receivedData=self.MiddleQueryAndEndQueryGenerator(self.GetDataForInsert())
@@ -256,4 +258,3 @@ class ExcelToSQL:
             print("Added Sql query in "+self.txtFileName+" Successfully !")
         except:
             print("Failed to Generate Sql")
-    

@@ -8,7 +8,7 @@ class ExcelToSQL:
         self.updatingCol=[]
         self.noOfRows=0
         self.exportSQLTxtFile="sql.txt"
-        if (self.filename == ''):
+        if(len(self.filename.strip())== 0):
             self.filename="data.xlsx"
         self.EmptyTheTextFile()
         self.TakeUserRequirements()
